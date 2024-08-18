@@ -40,6 +40,8 @@
 /* Enable this to catch more bugs in the RC phase */
 #define CL_BYTECODE_SAFE
 
+#define CL_DEBUG 1
+
 #ifdef CL_BYTECODE_SAFE
 /* These checks will also be done by the bytecode verifier, but for
  * debugging purposes we have explicit checks, these should never fail! */
@@ -79,7 +81,7 @@ static inline int bcfail(const char *msg, long a, long b,
 #define CHECK_EQ(a, b)
 #define CHECK_GT(a, b)
 #endif
-#if 0 /* too verbose, use #ifdef CL_DEBUG if needed */
+#if CL_DEBUG /* too verbose, use #ifdef CL_DEBUG if needed */
 #define CHECK_UNREACHABLE                                \
     do {                                                 \
         cli_dbgmsg("bytecode: unreachable executed!\n"); \
@@ -92,7 +94,7 @@ static inline int bcfail(const char *msg, long a, long b,
 #define TRACE_INST(inst)                                                   \
     do {                                                                   \
         unsigned bbnum = 0;                                                \
-        printf("LibClamAV debug: bytecode trace: executing instruction "); \
+        printf(""); \
         cli_byteinst_describe(inst, &bbnum);                               \
         printf("\n");                                                      \
     } while (0)
@@ -804,6 +806,7 @@ int cli_vm_execute(const struct cli_bc *bc, struct cli_bc_ctx *ctx, const struct
             DEFINE_OP_BC_RET_N(OP_BC_RET_VOID * 5 + 4, uint8_t, (void), (void));
 
             DEFINE_ICMPOP(OP_BC_ICMP_EQ, res = (op0 == op1));
+            // DEFINE_ICMPOP(OP_BC_ICMP_EQ, printf("%d: %x =?= %x\n", bb_inst, op0, op1);res = (op0 == op1));
             DEFINE_ICMPOP(OP_BC_ICMP_NE, res = (op0 != op1));
             DEFINE_ICMPOP(OP_BC_ICMP_UGT, res = (op0 > op1));
             DEFINE_ICMPOP(OP_BC_ICMP_UGE, res = (op0 >= op1));
