@@ -87,10 +87,16 @@ static inline int bcfail(const char *msg, long a, long b,
         cli_dbgmsg("bytecode: unreachable executed!\n"); \
         return CL_EBYTECODE;                             \
     } while (0)
-#define TRACE_PTR(ptr, s) cli_dbgmsg("bytecode trace: ptr %llx, +%x\n", ptr, s);
-#define TRACE_R(x) cli_dbgmsg("bytecode trace: %u, read %llx\n", pc, (long long)x);
-#define TRACE_W(x, w, p) cli_dbgmsg("bytecode trace: %u, write%d @%u %llx\n", pc, p, w, (long long)(x));
-#define TRACE_EXEC(id, dest, ty, stack) cli_dbgmsg("bytecode trace: executing %d, -> %u (%u); %u\n", id, dest, ty, stack)
+
+// #define TRACE_PTR(ptr, s) cli_dbgmsg("bytecode trace: ptr %llx, +%x\n", ptr, s);
+// #define TRACE_R(x) cli_dbgmsg("bytecode trace: %u, read %llx\n", pc, (long long)x);
+// #define TRACE_W(x, w, p) cli_dbgmsg("bytecode trace: %u, write%d @%u %llx\n", pc, p, w, (long long)(x));
+// #define TRACE_EXEC(id, dest, ty, stack) cli_dbgmsg("bytecode trace: executing %d, -> %u (%u); %u\n", id, dest, ty, stack)
+#define TRACE_PTR(ptr, s) printf("ptr %llx, +%x\n", ptr, s);
+#define TRACE_R(x) printf("%u, read %llx\n", pc, (long long)x);
+#define TRACE_W(x, w, p) printf("%u, write%d @%u %llx\n", pc, p, w, (long long)(x));
+#define TRACE_EXEC(id, dest, ty, stack) printf("bytecode trace: executing %d, -> %u (%u); %u\n", id, dest, ty, stack)
+
 #define TRACE_INST(inst)                                                   \
     do {                                                                   \
         unsigned bbnum = 0;                                                \
@@ -98,7 +104,10 @@ static inline int bcfail(const char *msg, long a, long b,
         cli_byteinst_describe(inst, &bbnum);                               \
         printf("\n");                                                      \
     } while (0)
-#define TRACE_API(s, dest, ty, stack) cli_dbgmsg("bytecode trace: executing %s, -> %u (%u); %u\n", s, dest, ty, stack)
+
+// #define TRACE_API(s, dest, ty, stack) cli_dbgmsg("bytecode trace: executing %s, -> %u (%u); %u\n", s, dest, ty, stack)
+#define TRACE_API(s, dest, ty, stack) printf("bytecode trace: executing %s, -> %u (%u); %u\n", s, dest, ty, stack)
+
 #else
 #define CHECK_UNREACHABLE return CL_EBYTECODE
 #define TRACE_PTR(ptr, s)
@@ -806,7 +815,8 @@ int cli_vm_execute(const struct cli_bc *bc, struct cli_bc_ctx *ctx, const struct
             DEFINE_OP_BC_RET_N(OP_BC_RET_VOID * 5 + 4, uint8_t, (void), (void));
 
             DEFINE_ICMPOP(OP_BC_ICMP_EQ, res = (op0 == op1));
-            // DEFINE_ICMPOP(OP_BC_ICMP_EQ, printf("%d: %x =?= %x\n", bb_inst, op0, op1);res = (op0 == op1));
+            // DEFINE_ICMPOP(OP_BC_ICMP_EQ, printf("===> %d: %x == %x\n", bb_inst, op0, op1);res = (op0 == op1));
+
             DEFINE_ICMPOP(OP_BC_ICMP_NE, res = (op0 != op1));
             DEFINE_ICMPOP(OP_BC_ICMP_UGT, res = (op0 > op1));
             DEFINE_ICMPOP(OP_BC_ICMP_UGE, res = (op0 >= op1));
